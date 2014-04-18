@@ -7,7 +7,7 @@
     <ProjectGuid>{C0B9C2E1-6878-4808-935B-438A5C26A9DC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Swashbuckle.TestApp.Core</RootNamespace>
+    <RootNamespace>Swashbuckle.TestApp</RootNamespace>
     <AssemblyName>Swashbuckle.TestApp.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -68,7 +68,6 @@
     <Compile Include="Controllers\OrderItemsController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
-    <Compile Include="SupportedInVersionsAttribute.cs" />
     <Compile Include="Models\Confirmation.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\MyGenericType.cs" />
@@ -77,8 +76,8 @@
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SwaggerExtensions\AddAuthorizationErrorCodes.cs" />
-    <Compile Include="SwaggerExtensions\AddStandardErrorCodes.cs" />
+    <Compile Include="SwaggerExtensions\AddAuthorizationResponseCodes.cs" />
+    <Compile Include="SwaggerExtensions\AddStandardResponseCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

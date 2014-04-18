@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace Swashbuckle.Core.Swagger
+namespace Swashbuckle.Swagger
 {
     public class DataTypeRegistry
     {
@@ -36,13 +36,14 @@ namespace Swashbuckle.Core.Swagger
             };
 
         private readonly IDictionary<Type, DataType> _complexMappings;
-
+        private readonly Dictionary<Type, Func<DataType>> _customMappings;
         private readonly IEnumerable<PolymorphicType> _polymorphicTypes;
         private readonly IEnumerable<IModelFilter> _modelFilters;
 
-        public DataTypeRegistry(IEnumerable<PolymorphicType> polymorphicTypes, IEnumerable<IModelFilter> modelFilters)
+        public DataTypeRegistry(Dictionary<Type, Func<DataType>> customMappings, IEnumerable<PolymorphicType> polymorphicTypes, IEnumerable<IModelFilter> modelFilters)
         {
             _complexMappings = new Dictionary<Type, DataType>();
+            _customMappings = customMappings;
             _polymorphicTypes = polymorphicTypes;
             _modelFilters = modelFilters;
         }
@@ -66,11 +67,21 @@ namespace Swashbuckle.Core.Swagger
 
         public IDictionary<string, DataType> GetModels()
         {
-            return _complexMappings.ToDictionary(entry => entry.Value.Id, entry => entry.Value);
+            try
+            {
+                return _complexMappings.ToDictionary(entry => entry.Value.Id, entry => entry.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException("Failed to generate Swagger models with unique Id's. Do you have multiple API types with the same class name?");
+            }
         }
 
         private DataType GetOrRegister(Type type, bool deferIfComplex, Queue<Type> deferredTypes)
         {
+            if (_customMappings.ContainsKey(type))
+                return _customMappings[type]();
+
             if (PrimitiveMappings.ContainsKey(type))
                 return PrimitiveMappings[type]();
 

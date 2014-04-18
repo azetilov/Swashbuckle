@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using Swashbuckle.TestApp.Core.Models;
+using Swashbuckle.TestApp.Models;
 
-namespace Swashbuckle.TestApp.Core.Controllers
+namespace Swashbuckle.TestApp.Controllers
 {
     public class OrdersController : ApiController
     {
@@ -12,6 +12,11 @@ namespace Swashbuckle.TestApp.Core.Controllers
             return order;
         }
 
+        /// <summary>
+        /// Get all orders in the system
+        /// </summary>
+        /// <remarks>For power users only</remarks>
+        /// <returns></returns>
         public IList<Order> GetAll()
         {
             return new[]

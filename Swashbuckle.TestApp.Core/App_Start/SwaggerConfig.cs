@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Net.Http;
 using System.Web.Http;
-using Swashbuckle.Core.Application;
-using Swashbuckle.TestApp.Core.Models;
-using Swashbuckle.TestApp.Core.SwaggerExtensions;
+using Swashbuckle.Application;
+using Swashbuckle.TestApp.Models;
+using Swashbuckle.TestApp.SwaggerExtensions;
 
-namespace Swashbuckle.TestApp.Core
+namespace Swashbuckle.TestApp
 {
     public class SwaggerConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            Swashbuckle.Core.Bootstrapper.Init(config);
+            Bootstrapper.Init(config);
 
             SwaggerSpecConfig.Customize(c =>
                 {
-                    c.ResolveBasePathUsing((req) => "1.0");
+                    c.ResolveTargetVersionUsing((req) => "2.0");
 
                     c.IgnoreObsoleteActions();
-
-                    c.OperationFilter<AddStandardErrorCodes>();
-                    c.OperationFilter<AddAuthorizationErrorCodes>();
 
                     c.PolymorphicType<Product>(pc => pc
                         .DiscriminateBy(p => p.Type)
@@ -29,6 +26,9 @@ namespace Swashbuckle.TestApp.Core
                         .SubType<Service>(sc => sc
                             .SubType<Shipping>()
                             .SubType<Packaging>()));
+
+                    c.OperationFilter<AddStandardResponseCodes>();
+                    c.OperationFilter<AddAuthorizationResponseCodes>();
 
                     c.IncludeXmlComments(GetXmlCommentsPath());
                 });

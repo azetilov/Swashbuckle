@@ -4,9 +4,9 @@ using System.Linq.Expressions;
 using System.Net.Http;
 using System.Web.Http.Description;
 using System.Xml.XPath;
-using Swashbuckle.Core.Swagger;
+using Swashbuckle.Swagger;
 
-namespace Swashbuckle.Core.Application
+namespace Swashbuckle.Application
 {
     public class SwaggerSpecConfig
     {
@@ -25,19 +25,19 @@ namespace Swashbuckle.Core.Application
             ResolveVersionSupport = (apiDesc, version) => true;
             ResolveResourceName = (apiDesc) => apiDesc.ActionDescriptor.ControllerDescriptor.ControllerName;
             OperationFilters = new List<IOperationFilter>();
-            CustomTypeMappings = new Dictionary<Type, Func<DataType>>();
             PolymorphicTypes = new List<PolymorphicType>();
+            CustomTypeMappings = new Dictionary<Type, Func<DataType>>();
             ModelFilters = new List<IModelFilter>();
         }
 
         internal Func<HttpRequestMessage, string> ResolveBasePath { get; private set; }
         internal Func<HttpRequestMessage, string> ResolveTargetVersion { get; private set; }
-        internal Func<ApiDescription, string, bool> ResolveVersionSupport { get; private set; } 
-        internal Func<ApiDescription, string> ResolveResourceName { get; private set; }
         internal bool IgnoreObsoleteActionsFlag { get; private set; }
+        internal Func<ApiDescription, string, bool> ResolveVersionSupport { get; private set; }
+        internal Func<ApiDescription, string> ResolveResourceName { get; private set; }
         internal List<IOperationFilter> OperationFilters = new List<IOperationFilter>();
-        internal Dictionary<Type, Func<DataType>> CustomTypeMappings { get; private set; }
         internal List<PolymorphicType> PolymorphicTypes { get; private set; }
+        internal Dictionary<Type, Func<DataType>> CustomTypeMappings { get; private set; }
         internal List<IModelFilter> ModelFilters { get; private set; }
 
         public SwaggerSpecConfig ResolveBasePathUsing(Func<HttpRequestMessage, string> resolveBasePath)
@@ -74,6 +74,33 @@ namespace Swashbuckle.Core.Application
             return this;
         }
 
+        public SwaggerSpecConfig MapType<T>(Func<DataType> factory)
+        {
+            CustomTypeMappings[typeof (T)] = factory;
+            return this;
+        }
+
+        public SwaggerSpecConfig PolymorphicType<TBase>(Action<BasePolymorphicType<TBase>> configure)
+        {
+            var polymorphicType = new BasePolymorphicType<TBase>();
+            configure(polymorphicType);
+            PolymorphicTypes.Add(polymorphicType);
+            return this;
+        }
+
+        public SwaggerSpecConfig ModelFilter<T>()
+            where T : IModelFilter, new()
+        {
+            return ModelFilter(new T());
+        }
+
+        public SwaggerSpecConfig ModelFilter(IModelFilter modelFilter)
+        {
+            if (modelFilter == null) throw new ArgumentNullException("modelFilter");
+            ModelFilters.Add(modelFilter);
+            return this;
+        }
+
         public SwaggerSpecConfig OperationFilter<T>()
             where T : IOperationFilter, new()
         {
@@ -84,20 +111,6 @@ namespace Swashbuckle.Core.Application
         {
             if (operationFilter == null) throw new ArgumentNullException("operationFilter");
             OperationFilters.Add(operationFilter);
-            return this;
-        }
-
-        public SwaggerSpecConfig MapType<T>(Func<DataType> factoryMethod)
-        {
-            CustomTypeMappings[typeof (T)] = factoryMethod;
-            return this;
-        }
-
-        public SwaggerSpecConfig PolymorphicType<TBase>(Action<BasePolymorphicType<TBase>> configure)
-        {
-            var polymorphicType = new BasePolymorphicType<TBase>();
-            configure(polymorphicType);
-            PolymorphicTypes.Add(polymorphicType);
             return this;
         }
 

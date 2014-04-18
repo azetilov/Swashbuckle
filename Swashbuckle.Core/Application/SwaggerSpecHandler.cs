@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
-using Swashbuckle.Core.Swagger;
+using Swashbuckle.Swagger;
 
-namespace Swashbuckle.Core.Application
+namespace Swashbuckle.Application
 {
     public class SwaggerSpecHandler : HttpMessageHandler
     {
@@ -46,9 +46,9 @@ namespace Swashbuckle.Core.Application
                 _config.IgnoreObsoleteActionsFlag,
                 _config.ResolveVersionSupport,
                 _config.ResolveResourceName,
+                _config.CustomTypeMappings,
                 _config.PolymorphicTypes,
-                _config.ModelFilters,
-                _config.OperationFilters);
+                _config.ModelFilters, _config.OperationFilters);
 
             return new CachingSwaggerProvider(swaggerProvider);
         }
