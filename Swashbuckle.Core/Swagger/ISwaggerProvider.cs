@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Swashbuckle.Core.Swagger
@@ -20,6 +21,9 @@ namespace Swashbuckle.Core.Swagger
 
         [JsonProperty("apis")]
         public IList<Resource> Apis { get; set; }
+
+        [JsonProperty("authorizations")]
+        public IDictionary<string, AuthorizationScheme> Authorizations { get; set; }
     }
 
     public class Resource
@@ -50,6 +54,9 @@ namespace Swashbuckle.Core.Swagger
 
         [JsonProperty("models")]
         public IDictionary<string, DataType> Models { get; set; }
+
+        [JsonProperty("authorizations")]
+        public IDictionary<string, object> Authorizations { get; set; }
     }
 
     public class Api
@@ -95,6 +102,9 @@ namespace Swashbuckle.Core.Swagger
 
         [JsonProperty("responseMessages")]
         public IList<ResponseMessage> ResponseMessages { get; set; }
+
+        [JsonProperty("authorizations")]
+        public IDictionary<string, object> Authorizations { get; set; }
     }
 
     public class Parameter
@@ -167,5 +177,112 @@ namespace Swashbuckle.Core.Swagger
 
         [JsonProperty("discriminator")]
         public string Discriminator { get; set; }
+    }
+
+    public abstract class AuthorizationScheme
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("passAs")]
+        public string PassAs { get; set; }
+
+        [JsonProperty("keyname")]
+        public string KeyName { get; set; }
+    }
+
+    public class OAuth2AuthorizationScheme : AuthorizationScheme
+    {
+        public OAuth2AuthorizationScheme(PassAsEnum passAs, string keyName)
+        {
+            Type = "oauth2";
+            PassAs = passAs.ToString();
+            KeyName = keyName;
+        }
+
+        [JsonProperty("scopes")]
+        public IEnumerable<AuthorizationScope> Scopes { get; set; }
+
+        [JsonProperty("grantTypes")]
+        public GrantType GrantTypes { get; set; }
+    }
+
+    public class BasicAuthorizationScheme : AuthorizationScheme
+    {
+        public BasicAuthorizationScheme(PassAsEnum passAs, string keyName)
+        {
+            Type = "basicAuth";
+            PassAs = passAs.ToString();
+            KeyName = keyName;
+        }
+    }
+
+    public class GrantType
+    {
+        [JsonProperty("implicit")]
+        public ImplicitGrantType Implicit { get; set; }
+
+        [JsonProperty("authorization_code")]
+        public AuthorizationCodeGrantType AuthorizationCode { get; set; }
+    }
+
+    public class ImplicitGrantType
+    {
+        [JsonProperty("loginEndpoint")]
+        public LoginEndpoint LoginEndpoint { get; set; }
+
+        [JsonProperty("tokenName")]
+        public string TokenName { get; set; }
+    }
+
+    public class AuthorizationCodeGrantType
+    {
+        [JsonProperty("tokenRequestEndpoint")]
+        public TokenRequestEndpoint TokenRequestEndpoint { get; set; }
+
+        [JsonProperty("tokenEndpoint")]
+        public TokenEndpoint TokenEndpoint { get; set; }
+    }
+
+    public class TokenRequestEndpoint
+    {
+        [JsonProperty("url")]
+        public Uri Url { get; set; }
+
+        [JsonProperty("clientIdName")]
+        public string ClientIdName { get; set; }
+
+        [JsonProperty("clientSecretName")]
+        public string ClientSecretName { get; set; }
+    }
+
+    public class LoginEndpoint
+    {
+        [JsonProperty("url")]
+        public Uri Url { get; set; }
+    }
+
+    public class TokenEndpoint
+    {
+        [JsonProperty("url")]
+        public Uri Url { get; set; }
+
+        [JsonProperty("tokenName")]
+        public string TokenName { get; set; }
+    }
+
+    public class AuthorizationScope
+    {
+        [JsonProperty("scope")]
+        public string Scope { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
+    }
+
+    public enum PassAsEnum
+    {
+        Header,
+        Query
     }
 }

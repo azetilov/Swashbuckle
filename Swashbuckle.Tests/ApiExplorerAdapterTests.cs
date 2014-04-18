@@ -894,6 +894,7 @@ namespace Swashbuckle.Tests
             Func<ApiDescription, string> resourceNameResolver = null,
             IEnumerable<PolymorphicType> polymorphicTypes = null,
             IEnumerable<IOperationFilter> operationFilters = null,
+            IEnumerable<IResourceListingFilter> resourceListingFilters = null,
             bool ignoreObsoletetActions = false)
         {
             return new ApiExplorerAdapter(
@@ -903,7 +904,8 @@ namespace Swashbuckle.Tests
                 resourceNameResolver ?? (apiDesc => apiDesc.ActionDescriptor.ControllerDescriptor.ControllerName),
                 polymorphicTypes ?? new List<PolymorphicType>(),
                 new List<IModelFilter>(),
-                operationFilters ?? new List<IOperationFilter>());
+                operationFilters ?? new List<IOperationFilter>(),
+                resourceListingFilters ?? new List<IResourceListingFilter>());
         }
 
         private static void ApiDeclaration(ISwaggerProvider swaggerProvider, string resourceName, Action<ApiDeclaration> applyAssertions)

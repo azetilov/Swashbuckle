@@ -74,6 +74,7 @@
     <Compile Include="Swagger\DataTypeRegistry.cs" />
     <Compile Include="Swagger\IModelFilter.cs" />
     <Compile Include="Swagger\IOperationFilter.cs" />
+    <Compile Include="Swagger\IResourceListingFilter.cs" />
     <Compile Include="Swagger\ISwaggerProvider.cs" />
     <Compile Include="Swagger\OperationGenerator.cs" />
     <Compile Include="PolymorphicType.cs" />
@@ -81,7 +82,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Swashbuckle.Core.nuspec">
       <SubType>Designer</SubType>
     </Content>

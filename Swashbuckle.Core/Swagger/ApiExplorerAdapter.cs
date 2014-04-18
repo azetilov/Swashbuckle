@@ -16,6 +16,7 @@ namespace Swashbuckle.Core.Swagger
         private readonly IEnumerable<PolymorphicType> _polymorphicTypes;
         private readonly IEnumerable<IModelFilter> _modelFilters;
         private readonly IEnumerable<IOperationFilter> _operationFilters;
+        private readonly IEnumerable<IResourceListingFilter> _resourceListingFilters; 
 
         public ApiExplorerAdapter(
             IApiExplorer apiExplorer,
@@ -24,7 +25,8 @@ namespace Swashbuckle.Core.Swagger
             Func<ApiDescription, string> resolveResourceName,
             IEnumerable<PolymorphicType> polymorphicTypes,
             IEnumerable<IModelFilter> modelFilters,
-            IEnumerable<IOperationFilter> operationFilters)
+            IEnumerable<IOperationFilter> operationFilters,
+            IEnumerable<IResourceListingFilter> resourceListingFilters)
         {
             _apiExplorer = apiExplorer;
             _ignoreObsoleteActions = ignoreObsoleteActions;
@@ -33,6 +35,7 @@ namespace Swashbuckle.Core.Swagger
             _polymorphicTypes = polymorphicTypes;
             _modelFilters = modelFilters;
             _operationFilters = operationFilters;
+            _resourceListingFilters = resourceListingFilters;
         }
 
         public ResourceListing GetListing(string basePath, string version)
@@ -43,12 +46,20 @@ namespace Swashbuckle.Core.Swagger
                 .Select(apiDescGrp => new Resource { Path = "/" + apiDescGrp.Key })
                 .ToArray();
 
-            return new ResourceListing
+            var resourceListing = new ResourceListing
+                                  {
+                                      SwaggerVersion = SwaggerVersion,
+                                      ApiVersion = version,
+                                      Apis = resources,
+                                      Authorizations = new Dictionary<string, AuthorizationScheme>()
+                                  };
+
+            foreach (var filter in _resourceListingFilters)
             {
-                SwaggerVersion = SwaggerVersion,
-                ApiVersion = version,
-                Apis = resources
-            };
+                filter.Apply(resourceListing);
+            }
+
+            return resourceListing;
         }
 
         public ApiDeclaration GetDeclaration(string basePath, string version, string resourceName)
@@ -73,7 +84,7 @@ namespace Swashbuckle.Core.Swagger
                 BasePath = basePath,
                 ResourcePath = "/" + resourceName,
                 Apis = apis,
-                Models = dataTypeRegistry.GetModels()
+                Models = dataTypeRegistry.GetModels(),
             };
         }
 

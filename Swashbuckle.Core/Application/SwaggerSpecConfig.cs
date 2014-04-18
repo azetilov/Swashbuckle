@@ -28,6 +28,7 @@ namespace Swashbuckle.Core.Application
             CustomTypeMappings = new Dictionary<Type, Func<DataType>>();
             PolymorphicTypes = new List<PolymorphicType>();
             ModelFilters = new List<IModelFilter>();
+            ResourceListingFilters = new List<IResourceListingFilter>();
         }
 
         internal Func<HttpRequestMessage, string> ResolveBasePath { get; private set; }
@@ -39,6 +40,7 @@ namespace Swashbuckle.Core.Application
         internal Dictionary<Type, Func<DataType>> CustomTypeMappings { get; private set; }
         internal List<PolymorphicType> PolymorphicTypes { get; private set; }
         internal List<IModelFilter> ModelFilters { get; private set; }
+        internal List<IResourceListingFilter> ResourceListingFilters { get; private set; }
 
         public SwaggerSpecConfig ResolveBasePathUsing(Func<HttpRequestMessage, string> resolveBasePath)
         {
@@ -84,6 +86,19 @@ namespace Swashbuckle.Core.Application
         {
             if (operationFilter == null) throw new ArgumentNullException("operationFilter");
             OperationFilters.Add(operationFilter);
+            return this;
+        }
+
+        public SwaggerSpecConfig ResourceListingFilter<T>()
+            where T : IResourceListingFilter, new()
+        {
+            return ResourceListingFilter(new T());
+        }
+
+        public SwaggerSpecConfig ResourceListingFilter(IResourceListingFilter resourceListingFilter)
+        {
+            if (resourceListingFilter == null) throw new ArgumentNullException("resourceListingFilter");
+            ResourceListingFilters.Add(resourceListingFilter);
             return this;
         }
 

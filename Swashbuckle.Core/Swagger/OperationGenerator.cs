@@ -29,7 +29,8 @@ namespace Swashbuckle.Core.Swagger
                 Nickname = apiDescription.Nickname(),
                 Summary = apiDescription.Documentation,
                 Parameters = parameters,
-                ResponseMessages = new List<ResponseMessage>()
+                ResponseMessages = new List<ResponseMessage>(),
+                Authorizations = new Dictionary<string, object>()
             };
 
             var responseType = apiDescription.ActualResponseType();
